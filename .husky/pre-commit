@@ -1,6 +1,9 @@
 
+#!/bin/sh
 set -e
 
-cd frontend
 npx lint-staged
-npm run build
+
+npm --prefix frontend run build
+
+./backend/mvnw -f backend/pom.xml test
