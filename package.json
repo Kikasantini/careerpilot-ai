@@ -1,0 +1,25 @@
+{
+  "name": "careerpilot-ai",
+  "version": "1.0.0",
+  "description": "An AI-powered application that helps users tailor resumes\r and cover letters to job descriptions using verified\r professional information.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kikasantini/careerpilot-ai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Kikasantini/careerpilot-ai/issues"
+  },
+  "homepage": "https://github.com/Kikasantini/careerpilot-ai#readme",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
