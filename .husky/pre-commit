@@ -1,0 +1,6 @@
+
+set -e
+
+cd frontend
+npx lint-staged
+npm run build
