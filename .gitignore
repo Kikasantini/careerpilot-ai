@@ -29,3 +29,11 @@ Thumbs.db
 # Generated files
 output/
 *.log
+
+# Python virtual environments
+ai-service/.venv/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+.pytest_cache/
