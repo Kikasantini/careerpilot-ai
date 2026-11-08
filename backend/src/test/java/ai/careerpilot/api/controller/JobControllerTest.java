@@ -2,8 +2,10 @@ package ai.careerpilot.api.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import ai.careerpilot.api.service.JobAnalysisService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -19,8 +21,10 @@ class JobControllerTest {
 
   @BeforeEach
   void setUp() {
-    // Initialize MockMvc before each test without starting the full Spring application.
-    mockMvc = MockMvcBuilders.standaloneSetup(new JobController()).build();
+    // Provide the controller with its required service dependency.
+    JobAnalysisService jobAnalysisService = new JobAnalysisService();
+
+    mockMvc = MockMvcBuilders.standaloneSetup(new JobController(jobAnalysisService)).build();
   }
 
   @Test
@@ -48,7 +52,31 @@ class JobControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
         .andExpect(status().isOk())
-        .andExpect(content().string("Job analysis request received!"));
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.message").value("Job description received for analysis."))
+        .andExpect(jsonPath("$.inputSource").value("description"));
+  }
+
+  @Test
+  void analyzeJobShouldAcceptValidUrl() throws Exception {
+    String requestBody =
+        """
+        {
+          "jobUrl": "https://example.com/jobs/123",
+          "jobDescription": null
+        }
+        """;
+
+    // Verify that URL-based requests return the expected JSON response.
+    mockMvc
+        .perform(
+            MockMvcRequestBuilders.post("/api/jobs/analyze")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.message").value("Job URL received for analysis."))
+        .andExpect(jsonPath("$.inputSource").value("url"));
   }
 
   @Test

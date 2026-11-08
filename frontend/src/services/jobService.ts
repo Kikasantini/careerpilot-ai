@@ -3,7 +3,12 @@ export interface JobAnalysisRequest {
   jobDescription: string;
 }
 
-export async function analyzeJob(request: JobAnalysisRequest): Promise<string> {
+export interface JobAnalysisResponse {
+  message: string;
+  inputSource: 'url' | 'description';
+}
+
+export async function analyzeJob(request: JobAnalysisRequest): Promise<JobAnalysisResponse> {
   let response: Response;
 
   try {
@@ -37,5 +42,6 @@ export async function analyzeJob(request: JobAnalysisRequest): Promise<string> {
     throw new Error(`HTTP ${response.status}: Something went wrong. Please try again.`);
   }
 
-  return response.text();
+  // Parse the JSON response returned by the Spring Boot API.
+  return (await response.json()) as JobAnalysisResponse;
 }

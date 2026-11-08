@@ -21,7 +21,7 @@ function App() {
         jobDescription: jobDescription.trim(),
       });
 
-      setSuccessMessage(response);
+      setSuccessMessage(response.message);
     } catch (error) {
       // Display a friendly message when the API request fails.
       setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred.');
