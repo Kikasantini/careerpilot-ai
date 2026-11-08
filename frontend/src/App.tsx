@@ -1,31 +1,33 @@
 import { useState } from 'react';
+import { analyzeJob } from './services/jobService';
 import './App.css';
 
 function App() {
   const [jobDescription, setJobDescription] = useState('');
   const [jobUrl, setJobUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const inputSource = jobDescription.trim() ? 'description' : 'url';
-
-  function handleAnalyzeJob() {
-    setErrorMessage(null);
-
-    if (inputSource === 'description') {
-      console.log('Job description:', jobDescription.trim());
-      return;
-    }
+  async function handleAnalyzeJob() {
+    setErrorMessage('');
+    setSuccessMessage('');
+    setIsLoading(true);
 
     try {
-      const url = new URL(jobUrl.trim());
+      // Use the description when both inputs are provided.
+      const response = await analyzeJob({
+        jobUrl: jobDescription.trim() ? '' : jobUrl.trim(),
+        jobDescription: jobDescription.trim(),
+      });
 
-      if (!['http:', 'https:'].includes(url.protocol)) {
-        throw new Error('Unsupported URL protocol');
-      }
-
-      console.log('Job URL:', url.href);
-    } catch {
-      setErrorMessage('Please enter a valid job posting URL.');
+      setSuccessMessage(response);
+    } catch (error) {
+      // Display a friendly message when the API request fails.
+      setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred.');
+    } finally {
+      // Always stop loading, whether the request succeeds or fails.
+      setIsLoading(false);
     }
   }
 
@@ -65,10 +67,16 @@ function App() {
         <button
           type="button"
           onClick={handleAnalyzeJob}
-          disabled={!jobUrl.trim() && !jobDescription.trim()}
+          disabled={(!jobUrl.trim() && !jobDescription.trim()) || isLoading}
         >
-          Analyze Job
+          {isLoading ? 'Analyzing...' : 'Analyze Job'}
         </button>
+
+        {successMessage && (
+          <p role="status" className="success-message">
+            {successMessage}
+          </p>
+        )}
 
         {errorMessage && (
           <p className="error-message" role="alert">
