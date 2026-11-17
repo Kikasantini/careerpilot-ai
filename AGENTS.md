@@ -13,7 +13,7 @@ Document generation and model integration are planned. Persistence technology wi
 
 ## Development conventions
 
-- Windows with Git Bash and VS Code is the primary local development environment. Other compatible environments are supported. Use Python 3.12 and the project virtual environment. From `ai-service/`, activate it with `source .venv/Scripts/activate` in Git Bash.
+- Use Python 3.12 and the project virtual environment for Python work. See [the development guide](docs/DEVELOPMENT.md) for prerequisites and setup.
 - Keep browser API calls in `frontend/src/services/` and use relative `/api` URLs. See `frontend/vite.config.ts` for local routing.
 - Keep Spring controllers focused on HTTP and validation, use DTO records for payloads, and put application logic in services. Route Python calls through the backend client layer. The current integration checks service health.
 - Preserve existing behavior and API contracts unless the task explicitly requires a change. Apply Clean Code and SOLID principles where they improve clarity. Reuse existing patterns and avoid unnecessary abstractions.
@@ -21,17 +21,7 @@ Document generation and model integration are planned. Persistence technology wi
 
 ## Verification
 
-Run commands from the directory shown. Activate the Python virtual environment first. Ruff commands require Ruff to be available in that environment.
-
-| Directory | Build | Lint and format checks | Test |
-|---|---|---|---|
-| `frontend/` | `npm run build` | `npm run lint`, `npm exec -- prettier --check .` | No test script is configured. |
-| `backend/` | `./mvnw package` | `./mvnw spotless:check` | `./mvnw test` |
-| `ai-service/` | No package build is configured. | `python -m ruff check .`, `python -m ruff format --check .` | `python -m pytest` |
-
-To apply formatting, use `npm exec -- prettier --write <paths>`, `./mvnw spotless:apply`, or `python -m ruff format <paths>` in the relevant module. Review formatting changes for scope.
-
-Keep Git hooks enabled. The pre-commit hook runs lint-staged, the frontend build, and backend tests. Root `npm test` is a failing placeholder. Run checks relevant to the change and report what passed, what failed, and which relevant checks were skipped or blocked and why. Never weaken tests or bypass quality checks to make validation pass.
+Use [the development guide](docs/DEVELOPMENT.md) for module-specific commands and hook coverage. Run the checks relevant to the change and report what passed, what failed, and why any relevant checks were skipped or blocked. Review formatting changes for scope. Keep Git hooks enabled. Never weaken tests or bypass quality checks.
 
 ## Git, approval, and privacy
 
