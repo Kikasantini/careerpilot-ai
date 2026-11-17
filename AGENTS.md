@@ -44,3 +44,5 @@ Keep Git hooks enabled. The pre-commit hook runs lint-staged, the frontend build
 ## Where to look next
 
 Start with the affected module’s manifest, entry point, and nearest tests. Follow more specific repository instructions where present. Keep this file focused on shared rules and entry points, and link to deeper documentation and reusable skills as they are added.
+
+- Consult [ARCHITECTURE.md](ARCHITECTURE.md) before making changes and update it when an authorized change affects module responsibilities, API contracts, or communication flows.
