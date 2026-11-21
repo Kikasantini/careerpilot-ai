@@ -87,12 +87,19 @@ To apply formatting, use `npm exec -- prettier --write <paths>` from `frontend/`
 
 ## Git hooks and automated checks
 
-The [Husky pre-commit hook](../.husky/pre-commit) runs `npx lint-staged`, the frontend build, and backend tests in that order. It stops at the first failure.
+The [Husky pre-commit hook](../.husky/pre-commit) runs `npx lint-staged`, conditional Python validation, the frontend production build, and backend tests in that order. It stops at the first failure.
 
 The [lint-staged configuration](../lint-staged.config.mjs) runs ESLint fixes and Prettier on matching frontend source files, Prettier on other matching frontend and tooling files, and [a Spotless wrapper](../scripts/format-staged-java.mjs) on staged backend Java files. The frontend build and backend tests run even when no staged files match a lint-staged rule.
+
+The [Python validation helper](../scripts/check-python.mjs) runs when staged changes affect any path under `ai-service/`, `scripts/check-python.mjs`, or `.husky/pre-commit`. Additions, modifications, deletions, and both paths of renames participate. Otherwise, it prints a skip message and succeeds without requiring Python.
+
+When triggered, the helper uses `ai-service/.venv/Scripts/python.exe` on Windows or `ai-service/.venv/bin/python` on Linux/macOS. It validates Python 3.12 and the availability of Ruff and pytest, then runs `python -m ruff check .`, `python -m ruff format --check .`, and `python -m pytest` once each, in that order, from `ai-service/`. A missing environment or tool causes a clear failure with setup guidance. The helper never installs dependencies automatically.
+
+Python checks inspect working-tree files, including unstaged changes. Validation covers the working tree rather than an isolated snapshot of staged content.
 
 ## Known tooling gaps
 
 - Clean installations and Linux/macOS execution have yet to be validated. The declared Node.js and npm ranges express intended support; compatibility across every version in those ranges has yet to be tested.
 - The root `npm test` is a failing placeholder. The frontend has no test script, and the repository has no checked-in end-to-end suite or CI workflow.
-- Pre-commit has no Python lint, format, or test step. Root and `docs/` Markdown fall outside the current lint-staged rules.
+- The complete pre-commit workflow passed on Windows with Git Bash outside the sandbox. Linux/macOS execution, failure paths, and staged Java formatting remain unvalidated.
+- Root and `docs/` Markdown fall outside the current lint-staged rules.
