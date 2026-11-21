@@ -117,9 +117,21 @@ When triggered, the helper uses `ai-service/.venv/Scripts/python.exe` on Windows
 
 Python checks inspect working-tree files, including unstaged changes. Validation covers the working tree rather than an isolated snapshot of staged content.
 
+## GitHub Actions CI
+
+The [Validate workflow](../.github/workflows/validate.yml) runs on pull requests targeting `main` and supports manual `workflow_dispatch` execution. Its single job uses Ubuntu 24.04, a 20-minute timeout, and read-only repository permissions (`contents: read`). Official setup actions are pinned to full commit SHAs.
+
+The workflow selects Node.js from the root [.nvmrc](../.nvmrc), checks that npm satisfies `>=11 <12`, configures Temurin Java 21, and selects Python 3.12 from [ai-service/.python-version](../ai-service/.python-version). It installs the root and frontend dependency trees with `npm ci`, creates `ai-service/.venv`, and installs `requirements-dev.txt` using that environment's interpreter.
+
+An online Maven provisioning step runs `./mvnw --batch-mode --no-transfer-progress spotless:check package` from `backend/` to populate the local distribution and artifact caches. The final step runs `npm run validate` from the repository root, including offline Maven validation. Each failed step stops the job. This first workflow has no dependency caching configured.
+
+Inspect runs and step logs under the repository's GitHub **Actions** tab by selecting **Validate**. For a pull request, inspect the workflow result in its checks. Manual execution through the **Run workflow** button requires the workflow to exist on the repository's default branch and may be unavailable before then. See [GitHub's manual workflow instructions](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow).
+
+Static YAML parsing and structural checks passed locally. Actual GitHub Actions execution and Linux compatibility remain unvalidated.
+
 ## Known tooling gaps
 
 - Clean installations and Linux/macOS execution have yet to be validated. The declared Node.js and npm ranges express intended support; compatibility across every version in those ranges has yet to be tested.
-- The root `npm test` is a failing placeholder. The frontend has no test script, and the repository has no checked-in end-to-end suite or CI workflow.
+- The root `npm test` is a failing placeholder. The frontend has no test script, and the repository has no checked-in end-to-end suite.
 - The complete pre-commit workflow passed on Windows with Git Bash outside the sandbox. Linux/macOS execution, failure paths, and staged Java formatting remain unvalidated.
 - Root and `docs/` Markdown fall outside the current lint-staged rules.
