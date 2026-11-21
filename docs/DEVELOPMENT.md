@@ -7,7 +7,7 @@ Windows with Git Bash and VS Code is the primary development environment. The co
 - Install Git for Windows with Git Bash. The pre-commit hook uses a shell, and its Java formatter invokes `bash`.
 - Use Node.js and npm for both the root tooling and the frontend. The repository pins package versions through the [root lockfile](../package-lock.json) and [frontend lockfile](../frontend/package-lock.json). Node.js 22.22.1 or a later 22.x release, or Node.js 24.x, satisfies the recorded engine ranges for the locked Vite, ESLint, and lint-staged versions. These choices are based on dependency metadata and have yet to be validated through a clean installation. The repository has no Node.js version pin.
 - Use JDK 21, as configured in [backend/pom.xml](../backend/pom.xml). The [Maven Wrapper](../backend/.mvn/wrapper/maven-wrapper.properties) selects Maven 3.10.0 and downloads it on first use if needed. Maven resolves the backend dependencies when you run a goal.
-- Use Python 3.12 and a local virtual environment. The Python version is specified in [AGENTS.md](../AGENTS.md) and reflected in the Ruff target in [ai-service/pyproject.toml](../ai-service/pyproject.toml).
+- Python 3.12 is the supported development baseline. Use a local virtual environment. The version is specified in [AGENTS.md](../AGENTS.md), declared in [ai-service/.python-version](../ai-service/.python-version), and reflected in the Ruff target in [ai-service/pyproject.toml](../ai-service/pyproject.toml). Compatible version managers can read `.python-version`; the file itself does not automatically install or enforce Python.
 
 From the repository root, install the two npm packages from their lockfiles. The root package's `prepare` script configures Husky. See the [root package manifest](../package.json) and [frontend package manifest](../frontend/package.json).
 
@@ -29,6 +29,17 @@ python -m pip install -r requirements-dev.txt
 ```
 
 The example assumes the Windows `py` launcher is available. If `python --version` already reports Python 3.12, `python -m venv .venv` works as the creation command. In later Git Bash sessions, activate the existing environment from `ai-service/`.
+
+Windows developers can continue using `py -3.12`. On Linux/macOS, select Python 3.12 with your available interpreter or version manager. From the repository root, use the following commands when `python3.12` is available.
+
+```bash
+cd ai-service
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-dev.txt
+```
+
+For subsequent sessions and the validation commands below, Linux/macOS developers activate the environment with `source .venv/bin/activate` from `ai-service/`.
 
 [requirements.txt](../ai-service/requirements.txt) pins runtime dependencies, their transitive dependencies, and the existing optional Uvicorn packages. [requirements-dev.txt](../ai-service/requirements-dev.txt) includes that file and adds pinned test dependencies and Ruff. For runtime-only setup, use `python -m pip install -r requirements.txt` from `ai-service/` with the virtual environment activated.
 
