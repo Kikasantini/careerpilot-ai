@@ -5,11 +5,11 @@ Windows with Git Bash and VS Code is the primary development environment. The co
 ## Prerequisites and setup
 
 - Install Git for Windows with Git Bash. The pre-commit hook uses a shell, and its Java formatter invokes `bash`.
-- Use Node.js and npm for both the root tooling and the frontend. The repository pins package versions through the [root lockfile](../package-lock.json) and [frontend lockfile](../frontend/package-lock.json). Node.js 22.22.1 or a later 22.x release, or Node.js 24.x, satisfies the recorded engine ranges for the locked Vite, ESLint, and lint-staged versions. These choices are based on dependency metadata and have yet to be validated through a clean installation. The repository has no Node.js version pin.
-- Use JDK 21, as configured in [backend/pom.xml](../backend/pom.xml). The [Maven Wrapper](../backend/.mvn/wrapper/maven-wrapper.properties) selects Maven 3.10.0 and downloads it on first use if needed. Maven resolves the backend dependencies when you run a goal.
+- Use Node.js 26 for both the root tooling and the frontend. The root [.nvmrc](../.nvmrc) contains the baseline `26.13.0`. Both npm manifests declare `engines.node` as `>=26 <27` and `engines.npm` as `>=11 <12`. These declarations do not automatically install or enforce versions. The repository pins package versions through the [root lockfile](../package-lock.json) and [frontend lockfile](../frontend/package-lock.json).
+- Use JDK 21, as configured in [backend/pom.xml](../backend/pom.xml). The [Maven Wrapper configuration](../backend/.mvn/wrapper/maven-wrapper.properties) specifies Wrapper version 3.3.4 and Maven distribution version 3.10.0. The wrapper downloads that distribution on first use if needed. Maven resolves the backend dependencies when you run a goal. Git tracks [backend/mvnw](../backend/mvnw) as executable with mode `100755`.
 - Python 3.12 is the supported development baseline. Use a local virtual environment. The version is specified in [AGENTS.md](../AGENTS.md), declared in [ai-service/.python-version](../ai-service/.python-version), and reflected in the Ruff target in [ai-service/pyproject.toml](../ai-service/pyproject.toml). Compatible version managers can read `.python-version`; the file itself does not automatically install or enforce Python.
 
-From the repository root, install the two npm packages from their lockfiles. The root package's `prepare` script configures Husky. See the [root package manifest](../package.json) and [frontend package manifest](../frontend/package.json).
+From the repository root, install the two npm packages from their lockfiles. The root package owns the Husky dependency and configures hooks through its `prepare` script. See the [root package manifest](../package.json) and [frontend package manifest](../frontend/package.json).
 
 ```bash
 npm ci
@@ -93,7 +93,6 @@ The [lint-staged configuration](../lint-staged.config.mjs) runs ESLint fixes and
 
 ## Known tooling gaps
 
-- The [frontend package](../frontend/package.json) runs `husky` in its `prepare` script and leaves Husky undeclared in its own dependencies. The [root package](../package.json) declares it. A standalone frontend installation may fail during `prepare` if Husky is unavailable on the script's PATH.
-- Git tracks [backend/mvnw](../backend/mvnw) with mode `100644`, without the executable bit. Direct execution with `./mvnw` can fail on Unix checkouts, including future Unix CI runners.
+- Clean installations and Linux/macOS execution have yet to be validated. The declared Node.js and npm ranges express intended support; compatibility across every version in those ranges has yet to be tested.
 - The root `npm test` is a failing placeholder. The frontend has no test script, and the repository has no checked-in end-to-end suite or CI workflow.
 - Pre-commit has no Python lint, format, or test step. Root and `docs/` Markdown fall outside the current lint-staged rules.
