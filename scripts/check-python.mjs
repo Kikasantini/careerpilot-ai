@@ -5,37 +5,48 @@ import { resolve } from "node:path";
 const rootDir = resolve(import.meta.dirname, "..");
 const serviceDir = resolve(rootDir, "ai-service");
 
-// Treat renames as deletion/addition pairs so both paths participate.
-const staged = spawnSync(
-  "git",
-  ["diff", "--cached", "--name-only", "--no-renames", "-z", "--"],
-  { cwd: rootDir, encoding: "utf8", shell: false },
-);
+const args = process.argv.slice(2);
 
-if (staged.stderr) {
-  process.stderr.write(staged.stderr);
-}
-
-if (staged.error || staged.status !== 0) {
+if (args.length > 1 || (args.length === 1 && args[0] !== "--all")) {
   console.error(
-    "Unable to inspect staged changes.",
-    staged.error?.message ?? "",
+    "Invalid arguments. Usage: node scripts/check-python.mjs [--all]",
   );
-  process.exit(staged.status || 1);
+  process.exit(1);
 }
 
-const relevant = staged.stdout
-  .split("\0")
-  .some(
-    (path) =>
-      path.startsWith("ai-service/") ||
-      path === "scripts/check-python.mjs" ||
-      path === ".husky/pre-commit",
+if (args.length === 0) {
+  // Treat renames as deletion/addition pairs so both paths participate.
+  const staged = spawnSync(
+    "git",
+    ["diff", "--cached", "--name-only", "--no-renames", "-z", "--"],
+    { cwd: rootDir, encoding: "utf8", shell: false },
   );
 
-if (!relevant) {
-  console.log("Skipping Python checks: no relevant changes are staged.");
-  process.exit(0);
+  if (staged.stderr) {
+    process.stderr.write(staged.stderr);
+  }
+
+  if (staged.error || staged.status !== 0) {
+    console.error(
+      "Unable to inspect staged changes.",
+      staged.error?.message ?? "",
+    );
+    process.exit(staged.status || 1);
+  }
+
+  const relevant = staged.stdout
+    .split("\0")
+    .some(
+      (path) =>
+        path.startsWith("ai-service/") ||
+        path === "scripts/check-python.mjs" ||
+        path === ".husky/pre-commit",
+    );
+
+  if (!relevant) {
+    console.log("Skipping Python checks: no relevant changes are staged.");
+    process.exit(0);
+  }
 }
 
 const python = resolve(

@@ -8,6 +8,7 @@
     "npm": ">=11 <12"
   },
   "scripts": {
+    "validate": "node scripts/validate.mjs",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
   },

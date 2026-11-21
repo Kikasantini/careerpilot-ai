@@ -21,6 +21,8 @@ Document generation and model integration are planned. Persistence technology wi
 
 ## Verification
 
+Prefer `npm run validate` from the repository root for comprehensive project validation, including changes spanning modules or final verification of development tooling. Use focused module checks during iteration and for narrowly scoped changes. See [the development guide](docs/DEVELOPMENT.md) for prerequisites and coverage.
+
 Use [the development guide](docs/DEVELOPMENT.md) for module-specific commands and hook coverage. Run the checks relevant to the change and report what passed, what failed, and why any relevant checks were skipped or blocked. Review formatting changes for scope. Keep Git hooks enabled. Never weaken tests or bypass quality checks.
 
 ## Git, approval, and privacy

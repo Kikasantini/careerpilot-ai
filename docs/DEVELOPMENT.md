@@ -75,6 +75,26 @@ Follow the existing naming and formatting patterns in the nearest source and tes
 
 ## Build, lint, format, and test
 
+For comprehensive project validation, run from the repository root.
+
+```bash
+npm run validate
+```
+
+The [validation orchestrator](../scripts/validate.mjs) runs the following checks sequentially, stopping at the first failure with a nonzero exit code.
+
+1. Frontend ESLint through `npm run lint`.
+2. Frontend Prettier `--check .` using the installed frontend tool.
+3. Frontend production build through `npm run build`.
+4. Backend Maven Wrapper `-o spotless:check package`, including formatting checks, compilation, tests, JAR creation, and Spring Boot repackaging.
+5. The [Python helper](../scripts/check-python.mjs) with `--all`, running Ruff lint, Ruff format check, and pytest once each.
+
+Validation runs independently of staged files and uses the existing installed dependencies. It does not install dependencies automatically. Bash, JDK 21, the frontend npm dependencies, and the project Python 3.12 environment with developer requirements must be available. The shell wrapper's selected Maven distribution and all required dependency and plugin artifacts must already be cached locally. A missing wrapper distribution stops validation before bootstrap; missing Maven artifacts fail in offline mode. Provision missing artifacts as a separate setup operation before retrying.
+
+Formatting is checked without applying fixes. Builds generate their normal output artifacts. Unlike pre-commit, this command checks all modules unconditionally and does not invoke lint-staged or its automatic formatting tasks.
+
+`npm run validate` passed on Windows with Git Bash outside the sandbox, including 25 Java tests and one Python test. Windows execution needs permissions allowing Python's socket-pair communication. Linux/macOS execution remains unvalidated.
+
 Run checks from the indicated directory. Activate `.venv` before running the Python commands.
 
 | Directory | Build | Lint and format checks | Tests |
