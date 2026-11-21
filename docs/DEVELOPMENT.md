@@ -19,16 +19,18 @@ git config --get core.hooksPath
 
 The expected hooks path is `.husky/_`. If it is missing, run `npm run prepare` from the repository root and check again.
 
-From a separate Git Bash session at the repository root, create and activate the Python environment and install the versions listed in [requirements.txt](../ai-service/requirements.txt).
+From a separate Git Bash session at the repository root, create and activate the Python environment and install the developer requirements.
 
 ```bash
 cd ai-service
 py -3.12 -m venv .venv
 source .venv/Scripts/activate
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
 ```
 
 The example assumes the Windows `py` launcher is available. If `python --version` already reports Python 3.12, `python -m venv .venv` works as the creation command. In later Git Bash sessions, activate the existing environment from `ai-service/`.
+
+[requirements.txt](../ai-service/requirements.txt) pins runtime dependencies, their transitive dependencies, and the existing optional Uvicorn packages. [requirements-dev.txt](../ai-service/requirements-dev.txt) includes that file and adds pinned test dependencies and Ruff. For runtime-only setup, use `python -m pip install -r requirements.txt` from `ai-service/` with the virtual environment activated.
 
 ## Environment diagnostics
 
@@ -82,6 +84,5 @@ The [lint-staged configuration](../lint-staged.config.mjs) runs ESLint fixes and
 
 - The [frontend package](../frontend/package.json) runs `husky` in its `prepare` script and leaves Husky undeclared in its own dependencies. The [root package](../package.json) declares it. A standalone frontend installation may fail during `prepare` if Husky is unavailable on the script's PATH.
 - Git tracks [backend/mvnw](../backend/mvnw) with mode `100644`, without the executable bit. Direct execution with `./mvnw` can fail on Unix checkouts, including future Unix CI runners.
-- Ruff has configuration but is absent from `requirements.txt`. The standard Python setup does not make the Ruff commands available by itself.
 - The root `npm test` is a failing placeholder. The frontend has no test script, and the repository has no checked-in end-to-end suite or CI workflow.
 - Pre-commit has no Python lint, format, or test step. Root and `docs/` Markdown fall outside the current lint-staged rules.
