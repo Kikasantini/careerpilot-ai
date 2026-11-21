@@ -3,6 +3,7 @@
 set -e
 
 npx lint-staged
+node scripts/check-python.mjs
 
 npm --prefix frontend run build
 

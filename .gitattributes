@@ -1,5 +1,6 @@
 
 * text=auto
+frontend/** text=auto eol=lf
 
 *.sh text eol=lf
 .husky/* text eol=lf

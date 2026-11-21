@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "description": "An AI-powered application that helps users tailor resumes\r and cover letters to job descriptions using verified\r professional information.",
   "main": "index.js",
+  "engines": {
+    "node": ">=26 <27",
+    "npm": ">=11 <12"
+  },
   "scripts": {
+    "validate": "node scripts/validate.mjs",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
   },
